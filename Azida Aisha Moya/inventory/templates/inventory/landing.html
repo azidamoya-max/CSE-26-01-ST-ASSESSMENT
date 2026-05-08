@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BestShoppers Market</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #F47B20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .logo-img {
+      width: 280px;
+      height: 280px;
+      object-fit: contain;
+      margin-bottom: 50px;
+    }
+    .btn-join {
+      background: white;
+      color: #F47B20;
+      border: none;
+      padding: 16px 90px;
+      font-size: 1rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      cursor: pointer;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-join:hover { background: #ffe0c2; }
+  </style>
+</head>
+<body>
+  <img src="{% static 'images/logo_white.png' %}" alt="BestShoppers Logo" class="logo-img">
+  <a href="{% url 'product_list' %}" class="btn-join">JOIN NOW</a>
+</body>
+</html>

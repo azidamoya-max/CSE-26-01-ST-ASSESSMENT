@@ -1,0 +1,345 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BestShoppers — Products</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f0f0f0; color: #222; }
+
+    header {
+      background: #F47B20;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { color: white; font-size: 1.4rem; letter-spacing: 2px; }
+    header a   { color: white; text-decoration: none; font-size: 0.9rem; }
+
+    .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+
+    /* TOP GRID */
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+      align-items: start;
+    }
+
+    /* STATS COLUMN */
+    .stats-column { display: flex; flex-direction: column; gap: 16px; }
+
+    .stats-box {
+      
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+      
+    }
+
+    top-box {
+      padding: 40px 24px;
+  }
+
+    /* Top box: Sales + Orders in ONE box */
+    .top-box {
+      display: flex;
+      align-items: center;
+    }
+    .top-box .stat-item { flex: 1; }
+    .top-box .divider {
+      width: 1px;
+      height: 60px;
+      background: #eee;
+      margin: 0 16px;
+    }
+
+    /* Bottom: two SEPARATE boxes */
+    .bottom-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .stat-item .value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #111;
+      margin-bottom: 6px;
+    }
+    .stat-item .label { font-size: 0.85rem; color: #999; }
+    .value.green { color: #2E7D32; }
+    .value.red   { color: #e53935; }
+
+    /* FORM */
+    .form-card {
+      background: white;
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    .form-card h2 { font-size: 1rem; color: #111; margin-bottom: 18px; font-weight: bold; }
+    .form-group { margin-bottom: 12px; }
+
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 14px;
+      background: white;
+      color: #999;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus { outline: none; border-color: #F47B20; color: #222; }
+    .form-control:not(:placeholder-shown) { border-color: #28a745; color: #222; }
+
+    .field-error .form-control { border-color: #dc3545 !important; }
+    .field-error .file-label   { border-color: #dc3545 !important; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .error { color: #dc3545; font-size: 12px; margin-top: 3px; display: block; }
+
+    .file-wrapper { position: relative; overflow: hidden; }
+    .file-wrapper input[type="file"] {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; opacity: 0; cursor: pointer;
+    }
+    .file-label {
+      display: block; width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 14px;
+      background: white; color: #999;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .file-label.has-file { border-color: #28a745; color: #222; }
+
+    .form-actions { display: flex; gap: 12px; margin-top: 16px; }
+    .btn-save {
+      flex: 1; background: #F47B20; color: white;
+      border: none; padding: 13px 0; border-radius: 4px;
+      font-size: 14px; font-weight: bold; cursor: pointer; letter-spacing: 1px;
+    }
+    .btn-save:hover { background: #d4680f; }
+    .btn-clear {
+      flex: 1; background: #ccc; color: #444;
+      border: none; padding: 13px 0; border-radius: 4px;
+      font-size: 14px; font-weight: bold; cursor: pointer; letter-spacing: 1px;
+    }
+    .btn-clear:hover { background: #bbb; }
+
+    /* SUCCESS BANNER */
+    .success-banner {
+      background: #28a745; color: white;
+      padding: 12px 16px; border-radius: 4px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 14px; font-weight: bold;
+    }
+    .success-banner .close-btn {
+      background: none; border: none;
+      color: white; font-size: 1rem; cursor: pointer;
+    }
+
+    /* ERROR BANNER */
+    .error-banner {
+      background: #f8d7da; color: #721c24;
+      padding: 12px 16px; border-radius: 4px;
+      margin-bottom: 16px; font-size: 14px;
+      font-weight: bold; border-left: 4px solid #dc3545;
+    }
+
+    /* TABLE */
+    .table-card {
+      background: white; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      background: #111; color: white;
+      padding: 14px 18px; text-align: center;
+      font-weight: bold; letter-spacing: 0.5px;
+    }
+    td { padding: 12px 18px; border-bottom: 1px solid #f0f0f0; text-align: center; color: #333; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fff8f3; }
+    .empty { color: #bbb; font-style: italic; text-align: center; padding: 40px; }
+  </style>
+</head>
+<body>
+
+
+
+<div class="container">
+  <div class="top-grid">
+
+    <!-- LEFT: STATS -->
+    <div class="stats-column">
+
+      <!-- ONE BOX: Sales + Orders -->
+      <div class="stats-box top-box">
+        <div class="stat-item">
+          <div class="value">UGX {{ total_value|intcomma }}</div>
+          <div class="label">Sales</div>
+        </div>
+        <div class="divider"></div>
+        <div class="stat-item">
+          <div class="value">UGX {{ total_orders|intcomma }}</div>
+          <div class="label">Orders</div>
+        </div>
+      </div>
+
+      <!-- TWO SEPARATE BOXES -->
+      <div class="bottom-boxes">
+        <div class="stats-box">
+          <div class="stat-item">
+            <div class="value green">UGX {{ in_stock|intcomma }}</div>
+            <div class="label">In stock</div>
+          </div>
+        </div>
+        <div class="stats-box">
+          <div class="stat-item">
+            <div class="value red">{{ out_of_stock }}</div>
+            <div class="label">Out of stock</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: FORM -->
+    <div class="form-card">
+      <h2>Add Product</h2>
+
+      {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'success' %}
+            <div class="success-banner" id="successBanner">
+              {{ message }}
+              <button class="close-btn" onclick="document.getElementById('successBanner').style.display='none'">✕</button>
+            </div>
+          {% else %}
+            <div class="error-banner">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group {% if form.name.errors %}field-error{% endif %}">
+          {{ form.name }}
+          {% if form.name.errors %}
+            <span class="error">{{ form.name.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group {% if form.category.errors %}field-error{% endif %}">
+          {{ form.category }}
+          {% if form.category.errors %}
+            <span class="error">{{ form.category.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group {% if form.price.errors %}field-error{% endif %}">
+          {{ form.price }}
+          {% if form.price.errors %}
+            <span class="error">{{ form.price.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group {% if form.quantity.errors %}field-error{% endif %}">
+          {{ form.quantity }}
+          {% if form.quantity.errors %}
+            <span class="error">{{ form.quantity.errors.0 }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-row">
+          <div class="form-group {% if form.color.errors %}field-error{% endif %}">
+            {{ form.color }}
+            {% if form.color.errors %}
+              <span class="error">{{ form.color.errors.0 }}</span>
+            {% endif %}
+          </div>
+          <div class="form-group {% if form.image.errors %}field-error{% endif %}">
+            <div class="file-wrapper">
+              <div class="file-label" id="file-label">Upload Image</div>
+              {{ form.image }}
+            </div>
+            {% if form.image.errors %}
+              <span class="error">{{ form.image.errors.0 }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-save">SAVE</button>
+          <button type="reset" class="btn-clear" id="clearBtn">CLEAR</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-card">
+    {% if products %}
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>NAME</th>
+          <th>CATEGORY</th>
+          <th>PRICE (UGX)</th>
+          <th>QUANTITY</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>#{{ p.id }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.category }}</td>
+          <td>{{ p.price|floatformat:0|intcomma }}</td>
+          <td>{{ p.quantity }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="empty">No products yet. Use the form to add one.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+  const fileInput = document.querySelector('input[type="file"]');
+  const fileLabel = document.getElementById('file-label');
+  const clearBtn  = document.getElementById('clearBtn');
+
+  if (fileInput) {
+    fileInput.addEventListener('change', function () {
+      if (this.files[0]) {
+        fileLabel.textContent = this.files[0].name;
+        fileLabel.classList.add('has-file');
+      }
+    });
+  }
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      fileLabel.textContent = 'Upload Image';
+      fileLabel.classList.remove('has-file');
+    });
+  }
+</script>
+
+</body>
+</html>
